@@ -31,8 +31,14 @@ background-color:lightblue;</string>
       <x>0</x>
       <y>0</y>
       <width>591</width>
-      <height>61</height>
+      <height>56</height>
      </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>591</width>
+      <height>61</height>
+     </size>
     </property>
     <property name="font">
      <font>
@@ -65,7 +71,7 @@ background-color:#0D98BA;</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../Icons/mainicon.png</pixmap>
+     <pixmap resource="../resources.qrc">:/Icons/Icons/mainicon.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -128,6 +134,8 @@ border-radius: 10px;</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
