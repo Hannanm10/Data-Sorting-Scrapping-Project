@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class SortingForm(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(SortingForm, self).__init__(parent)
+        self.parent = parent  # Store the reference to the parent window (main window)
         self.setupUi()
 
     def setupUi(self):
@@ -15,7 +16,7 @@ class SortingForm(QtWidgets.QWidget):
 
         # Set widget background color
         self.setStyleSheet("background-color: lightblue;")  # Light blue background
-        
+
         # Main vertical layout
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
 
@@ -32,14 +33,55 @@ class SortingForm(QtWidgets.QWidget):
         self.gridLayout = QtWidgets.QGridLayout()
         self.sortingButtons = {}
         algorithms = ['Bubble', 'Selection', 'Insertion', 'Merge', 'Quick', 'Counting', 'Radix', 'Bucket', 'Tim', 'Heap']
-        
+
         for i, algo in enumerate(algorithms):
             self.sortingButtons[algo] = QtWidgets.QPushButton(f"{algo} Sort")
             self.sortingButtons[algo].setStyleSheet("background-color: darkblue; color: white;")  # Dark blue buttons with white text
             self.sortingButtons[algo].clicked.connect(lambda _, a=algo: self.on_sort_button_clicked(a))
             self.gridLayout.addWidget(self.sortingButtons[algo], i // 5, i % 5)
-        
+
         self.verticalLayout.addLayout(self.gridLayout)
+
+        # Add a table with 7 columns and 10 rows
+        self.tableWidget = QtWidgets.QTableWidget(self)
+        self.tableWidget.setRowCount(10)  # Set the number of rows
+        self.tableWidget.setColumnCount(7)  # Set the number of columns
+        self.tableWidget.setHorizontalHeaderLabels(['Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5', 'Column 6', 'Column 7'])
+        self.tableWidget.setStyleSheet("background-color: white; color: black;")
+        self.verticalLayout.addWidget(self.tableWidget)
+
+        # Start and Stop buttons
+        self.buttonLayout = QtWidgets.QHBoxLayout()
+
+        self.startButton = QtWidgets.QPushButton("Start", self)
+        self.startButton.setStyleSheet("background-color: green; color: white;")
+        self.startButton.setFixedSize(100, 40)
+        self.startButton.clicked.connect(self.start_sorting)  # Start sorting functionality
+        self.buttonLayout.addWidget(self.startButton)
+
+        self.stopButton = QtWidgets.QPushButton("Stop", self)
+        self.stopButton.setStyleSheet("background-color: darkred; color: white;")
+        self.stopButton.setFixedSize(100, 40)
+        self.stopButton.clicked.connect(self.stop_sorting)  # Stop sorting functionality
+        self.buttonLayout.addWidget(self.stopButton)
+
+        self.verticalLayout.addLayout(self.buttonLayout)
+
+        # Time display label and text box
+        self.timeLabel = QtWidgets.QLabel("Time taken (ms):", self)
+        self.verticalLayout.addWidget(self.timeLabel)
+
+        self.timeDisplay = QtWidgets.QLineEdit(self)
+        self.timeDisplay.setReadOnly(True)  # Make it read-only to just display the time
+        self.timeDisplay.setStyleSheet("background-color: white; color: black;")
+        self.verticalLayout.addWidget(self.timeDisplay)
+
+        # Go Back button
+        self.backButton = QtWidgets.QPushButton("Go Back", self)
+        self.backButton.setStyleSheet("background-color: red; color: white;")
+        self.backButton.setFixedSize(100, 40)
+        self.backButton.clicked.connect(self.go_back)
+        self.verticalLayout.addWidget(self.backButton, alignment=QtCore.Qt.AlignCenter)
 
         # Add a small label at the bottom of the screen
         self.footerLabel = QtWidgets.QLabel("This is the footer", self)
@@ -50,9 +92,34 @@ class SortingForm(QtWidgets.QWidget):
         # Set the layout
         self.setLayout(self.verticalLayout)
 
-    # Sorting button onclick function placeholder
+    # Placeholder function for sorting
     def on_sort_button_clicked(self, algo):
-        print(f"{algo} sort button clicked") 
+        print(f"{algo} sort button clicked")
+        # Placeholder for sorting functionality
+
+    # Start sorting functionality (to be implemented)
+    def start_sorting(self):
+        print("Sorting started")
+        # Placeholder for starting sorting and measuring time
+
+    # Stop sorting functionality (to be implemented)
+    def stop_sorting(self):
+        print("Sorting stopped")
+        # Placeholder for stopping sorting
+
+    # Go Back button function to return to the main window
+    def go_back(self):
+        self.close()
+        self.mainform = Ui_MainWindow()  # Instantiate the Ui_Mainform class
+        self.mainform.show()
+
+
+
+
+
+
+
+
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -104,6 +171,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_2.setFixedHeight(40)
         self.pushButton_2.setFixedWidth(300)  # Adjust button width
         self.verticalLayout.addWidget(self.pushButton_2, alignment=QtCore.Qt.AlignCenter)  # Center the button
+
+        # Exit Button
+        self.exitButton = QtWidgets.QPushButton("Exit", self.centralwidget)
+        self.exitButton.setFont(font)
+        self.exitButton.setFixedHeight(40)
+        self.exitButton.setFixedWidth(300)  # Adjust button width
+        self.exitButton.setStyleSheet("background-color: darkred; color: white;")  # Styling for the exit button
+        self.exitButton.clicked.connect(self.close)  # Connect to close function
+        self.verticalLayout.addWidget(self.exitButton, alignment=QtCore.Qt.AlignCenter)  # Center the button
 
         # Set window layout
         self.setLayout(self.verticalLayout)
