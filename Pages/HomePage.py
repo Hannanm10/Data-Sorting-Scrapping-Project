@@ -88,7 +88,7 @@ class SortingForm(QtWidgets.QWidget):
         """Display a message box when sorting is done."""
         msg_box = QtWidgets.QMessageBox(self)
         msg_box.setWindowTitle("Sorting Done")
-        msg_box.setText("Sorting is complete!")
+        msg_box.setText("Sorting Complete!")
         msg_box.setIcon(QtWidgets.QMessageBox.Information)
         msg_box.addButton("OK", QtWidgets.QMessageBox.AcceptRole)
 
@@ -117,7 +117,7 @@ class SortingForm(QtWidgets.QWidget):
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
 
         # Welcome label
-        self.label = QtWidgets.QLabel("Welcome to the Sorting Algorithms Page", self)
+        self.label = QtWidgets.QLabel("Sorting Interface", self)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         font = QtGui.QFont()
         font.setPointSize(24)
@@ -148,7 +148,7 @@ class SortingForm(QtWidgets.QWidget):
         self.tableWidget = QtWidgets.QTableWidget(self)
         self.tableWidget.setRowCount(10)  # Set the number of rows
         self.tableWidget.setColumnCount(7)  # Set the number of columns
-        self.tableWidget.setHorizontalHeaderLabels(['Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5', 'Column 6', 'Column 7'])
+        self.tableWidget.setHorizontalHeaderLabels(['Name', 'Condition', 'Price', 'Shipping Estimate', 'Location', 'Total Sold', 'Seller Info'])
         self.tableWidget.setStyleSheet("background-color: white; color: black;")
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectColumns)  # Enable column selection
         self.verticalLayout.addWidget(self.tableWidget)
@@ -179,7 +179,7 @@ class SortingForm(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.backButton, alignment=QtCore.Qt.AlignCenter)
 
         # Add a small label at the bottom of the screen
-        self.footerLabel = QtWidgets.QLabel("This is the footer", self)
+        self.footerLabel = QtWidgets.QLabel("", self)
         self.footerLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.footerLabel.setStyleSheet("color: gray;")
         self.verticalLayout.addWidget(self.footerLabel)
