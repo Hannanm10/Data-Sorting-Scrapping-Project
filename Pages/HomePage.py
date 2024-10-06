@@ -1,17 +1,113 @@
-# coding: utf-8 -*-
-
+from SortedData import sort_table_by_column  
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from UIfunctions import load_csv_data, on_column_selected
+from Algorithms import merge_sort, quick_sort, radix_sort_strings, counting_sort_strings, bucket_sort, bubble_sort, selection_sort, insertion_sort, tim_sort, heap_sort
 
 class SortingForm(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(SortingForm, self).__init__(parent)
-        self.parent = parent  # Store the reference to the parent window (main window)
+        self.parent = parent
+     
         self.setupUi()
+
+    def on_sort_button_clicked(self, algo):
+        selected_items = self.tableWidget.selectedItems()
+        if selected_items:
+            selected_column = selected_items[0].column()
+            # No loader or progress bar calls
+            QtCore.QTimer.singleShot(0, lambda: self.perform_sort(algo, selected_column))
+
+    def perform_sort(self, algo, selected_column):
+        raw_data = []
+
+        # Extract the data from the table into raw_data
+        for row in range(self.tableWidget.rowCount()):
+            row_data = [self.tableWidget.item(row, col).text() for col in range(self.tableWidget.columnCount())]
+            raw_data.append(row_data)
+
+        # Determine if the selected column data is numeric
+        is_numeric = True
+        for i in range(len(raw_data)):
+            try:
+                raw_data[i][selected_column] = int(raw_data[i][selected_column])  # Attempt to convert to int
+            except ValueError:
+                is_numeric = False  # If conversion fails, it's not numeric
+
+        # Initialize the progress bar
+        self.progressBar.setValue(0)
+        self.progressBar.setMaximum(100)
+
+        # Sort the raw_data based on the selected algorithm
+        if algo == 'Merge':
+            sorted_data = merge_sort(raw_data, selected_column)  # Assuming merge_sort sorts correctly by column
+        elif algo == 'Quick':
+            sorted_data = quick_sort(raw_data, selected_column)  # Assuming quick_sort sorts correctly by column
+        elif algo == 'Counting':
+            if is_numeric:
+                sorted_data = counting_sort_strings([str(row[selected_column]) for row in raw_data], position=0)  # Adjust the position if needed
+            else:
+                sorted_data = counting_sort_strings([row[selected_column] for row in raw_data], position=0)  # Adjust the position if needed
+        elif algo == 'Radix':
+            if is_numeric:
+                sorted_data = radix_sort_strings([str(row[selected_column]) for row in raw_data])  # Ensure it's string
+            else:
+                sorted_data = radix_sort_strings([row[selected_column] for row in raw_data])
+        elif algo == 'Bucket':
+            sorted_data = bucket_sort([row[selected_column] for row in raw_data])
+        elif algo == 'Bubble':
+            sorted_data = bubble_sort([row[selected_column] for row in raw_data])
+        elif algo == 'Selection':
+            sorted_data = selection_sort([row[selected_column] for row in raw_data])
+        elif algo == 'Insertion':
+            sorted_data = insertion_sort(raw_data)  # This will sort both digits and strings
+        elif algo == 'Tim':
+            sorted_data = tim_sort(raw_data)  # This will sort both digits and strings
+        elif algo == 'Heap':
+            sorted_data = heap_sort(raw_data)  
+
+        # Simulate progress for the sorting operation
+        for i in range(101):
+            QtCore.QThread.msleep(10)  # Simulate time taken for sorting
+            self.progressBar.setValue(i)
+
+        # Map the sorted strings back to their original rows
+        sorted_raw_data = [raw_data[i] for i in sorted(range(len(raw_data)), key=lambda k: (str(raw_data[k][selected_column]) if not is_numeric else raw_data[k][selected_column]))]
+
+        # Update the table with the sorted data
+        for row in range(len(sorted_raw_data)):
+            for col in range(len(sorted_raw_data[row])):
+                self.tableWidget.item(row, col).setText(sorted_raw_data[row][col])
+
+        # Display a done message
+        self.show_done_message()
+
+        # Optionally, you could call a method to update the table if needed
+        self.update_table(sorted_raw_data)  # If you have a dedicated method for table updates
+
+    def show_done_message(self):
+        """Display a message box when sorting is done."""
+        msg_box = QtWidgets.QMessageBox(self)
+        msg_box.setWindowTitle("Sorting Done")
+        msg_box.setText("Sorting is complete!")
+        msg_box.setIcon(QtWidgets.QMessageBox.Information)
+        msg_box.addButton("OK", QtWidgets.QMessageBox.AcceptRole)
+
+        # Show the message box
+        msg_box.exec_()
+
+        # Reset the progress bar
+        self.progressBar.setValue(0)
+
+    def update_table(self, sorted_data):
+        """Updates the table with the sorted data."""
+        self.tableWidget.setRowCount(len(sorted_data))  # Adjust row count to fit sorted data
+        for row_index, row_data in enumerate(sorted_data):
+            for col_index, item in enumerate(row_data):
+                self.tableWidget.setItem(row_index, col_index, QtWidgets.QTableWidgetItem(str(item)))  # Update table with sorted values
 
     def setupUi(self):
         self.setObjectName("SortingForm")
-        self.resize(800, 600)
+        self.resize(1200, 800)
         self.setWindowTitle("Sorting Algorithms")
 
         # Set widget background color
@@ -36,7 +132,8 @@ class SortingForm(QtWidgets.QWidget):
 
         for i, algo in enumerate(algorithms):
             self.sortingButtons[algo] = QtWidgets.QPushButton(f"{algo} Sort")
-            self.sortingButtons[algo].setStyleSheet("background-color: darkblue; color: white;")  # Dark blue buttons with white text
+            self.sortingButtons[algo].setStyleSheet("background-color: darkblue; color: white;")
+            # Connect the button click to the on_sort_button_clicked method
             self.sortingButtons[algo].clicked.connect(lambda _, a=algo: self.on_sort_button_clicked(a))
             self.gridLayout.addWidget(self.sortingButtons[algo], i // 5, i % 5)
 
@@ -48,24 +145,17 @@ class SortingForm(QtWidgets.QWidget):
         self.tableWidget.setColumnCount(7)  # Set the number of columns
         self.tableWidget.setHorizontalHeaderLabels(['Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5', 'Column 6', 'Column 7'])
         self.tableWidget.setStyleSheet("background-color: white; color: black;")
+        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectColumns)  # Enable column selection
         self.verticalLayout.addWidget(self.tableWidget)
 
-        # Start and Stop buttons
-        self.buttonLayout = QtWidgets.QHBoxLayout()
+        # Connect the selection change signal to the on_column_selected method
+        self.tableWidget.itemSelectionChanged.connect(self.on_column_selected)
 
-        self.startButton = QtWidgets.QPushButton("Start", self)
-        self.startButton.setStyleSheet("background-color: green; color: white;")
-        self.startButton.setFixedSize(100, 40)
-        self.startButton.clicked.connect(self.start_sorting)  # Start sorting functionality
-        self.buttonLayout.addWidget(self.startButton)
-
-        self.stopButton = QtWidgets.QPushButton("Stop", self)
-        self.stopButton.setStyleSheet("background-color: darkred; color: white;")
-        self.stopButton.setFixedSize(100, 40)
-        self.stopButton.clicked.connect(self.stop_sorting)  # Stop sorting functionality
-        self.buttonLayout.addWidget(self.stopButton)
-
-        self.verticalLayout.addLayout(self.buttonLayout)
+        # Progress Bar
+        self.progressBar = QtWidgets.QProgressBar(self)
+        self.progressBar.setValue(0)
+        self.progressBar.setAlignment(QtCore.Qt.AlignCenter)
+        self.verticalLayout.addWidget(self.progressBar)
 
         # Time display label and text box
         self.timeLabel = QtWidgets.QLabel("Time taken (ms):", self)
@@ -91,109 +181,28 @@ class SortingForm(QtWidgets.QWidget):
 
         # Set the layout
         self.setLayout(self.verticalLayout)
+        self.load_data()
 
-    # Placeholder function for sorting
-    def on_sort_button_clicked(self, algo):
-        print(f"{algo} sort button clicked")
-        # Placeholder for sorting functionality
+    def on_column_selected(self):
+        """Handle the event when a column is selected in the QTableWidget."""
+        selected_items = self.tableWidget.selectedItems()
+        if selected_items:
+            selected_column = selected_items[0].column()  # Get the column of the first selected item
+            print(f"Selected column: {selected_column}")  # For debugging purposes
 
-    # Start sorting functionality (to be implemented)
-    def start_sorting(self):
-        print("Sorting started")
-        # Placeholder for starting sorting and measuring time
+    def load_data(self):
+        """Load initial data into the table."""
+        load_csv_data(self.tableWidget)  # Load CSV data into the table
 
-    # Stop sorting functionality (to be implemented)
-    def stop_sorting(self):
-        print("Sorting stopped")
-        # Placeholder for stopping sorting
-
-    # Go Back button function to return to the main window
     def go_back(self):
-        self.close()
-        self.mainform = Ui_MainWindow()  # Instantiate the Ui_Mainform class
-        self.mainform.show()
-
-
-
-
-
-
-
-
-
-
-class Ui_MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(Ui_MainWindow, self).__init__()
-        self.setupUi()
-
-    def setupUi(self):
-        self.setObjectName("MainWindow")
-        self.resize(1200, 800)
-        self.setWindowTitle("GoSort")
-
-        # Set main window background color
-        self.setStyleSheet("background-color: lightblue;")  # Light blue background
-
-        # Central widget
-        self.centralwidget = QtWidgets.QWidget(self)
-        self.setCentralWidget(self.centralwidget)
-
-        # Create vertical layout for central widget
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setContentsMargins(50, 20, 50, 50)  # Reduced bottom margin
-        self.verticalLayout.setSpacing(20)
-
-        # Title Label
-        self.label = QtWidgets.QLabel("Welcome to GoSort", self.centralwidget)
-        font = QtGui.QFont()
-        font.setPointSize(24)
-        font.setBold(False)  # Set to False to avoid bold effect
-        font.setWeight(25)   # Further reduced thickness (less than 30)
-        self.label.setFont(font)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setFixedHeight(60)  # Adjust the height
-        self.verticalLayout.addWidget(self.label)
-
-        # First Button (Go to Sorting)
-        self.pushButton = QtWidgets.QPushButton("Go to Sorting", self.centralwidget)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.pushButton.setFont(font)
-        self.pushButton.setFixedHeight(40)
-        self.pushButton.setFixedWidth(300)  # Adjust button width
-        self.pushButton.clicked.connect(self.open_sorting_form)  # Connect button click to open the sorting form
-        self.verticalLayout.addWidget(self.pushButton, alignment=QtCore.Qt.AlignCenter)  # Center the button
-
-        # Second Button (Add URL)
-        self.pushButton_2 = QtWidgets.QPushButton("Add URL", self.centralwidget)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setFixedHeight(40)
-        self.pushButton_2.setFixedWidth(300)  # Adjust button width
-        self.verticalLayout.addWidget(self.pushButton_2, alignment=QtCore.Qt.AlignCenter)  # Center the button
-
-        # Exit Button
-        self.exitButton = QtWidgets.QPushButton("Exit", self.centralwidget)
-        self.exitButton.setFont(font)
-        self.exitButton.setFixedHeight(40)
-        self.exitButton.setFixedWidth(300)  # Adjust button width
-        self.exitButton.setStyleSheet("background-color: darkred; color: white;")  # Styling for the exit button
-        self.exitButton.clicked.connect(self.close)  # Connect to close function
-        self.verticalLayout.addWidget(self.exitButton, alignment=QtCore.Qt.AlignCenter)  # Center the button
-
-        # Set window layout
-        self.setLayout(self.verticalLayout)
-
-    def open_sorting_form(self):
-        # Create and show the SortingForm when the button is clicked
-        self.sorting_form = SortingForm()  # Create SortingForm
-        self.sorting_form.show()  # Show the SortingForm
-        self.close()  # Close the current window
-
+        """Go back to the previous screen."""
+        self.parent.setCurrentIndex(0)  # Assuming you want to go back to the first widget in the stacked layout
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    main_window = Ui_MainWindow()  # Create instance of main window
-    main_window.show()  # Show the main window
+    mainWin = QtWidgets.QStackedWidget()
+    sorting_form = SortingForm(mainWin)
+    mainWin.addWidget(sorting_form)
+    mainWin.show()
     sys.exit(app.exec_())
