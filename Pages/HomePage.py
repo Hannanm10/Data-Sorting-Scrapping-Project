@@ -1,4 +1,3 @@
-from SortedData import sort_table_by_column  
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UIfunctions import load_csv_data, on_column_selected
 from Algorithms import merge_sort, quick_sort, radix_sort_strings, counting_sort_strings, bucket_sort, bubble_sort, selection_sort, insertion_sort, tim_sort, heap_sort
@@ -7,14 +6,12 @@ class SortingForm(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(SortingForm, self).__init__(parent)
         self.parent = parent
-     
         self.setupUi()
 
     def on_sort_button_clicked(self, algo):
         selected_items = self.tableWidget.selectedItems()
         if selected_items:
             selected_column = selected_items[0].column()
-            # No loader or progress bar calls
             QtCore.QTimer.singleShot(0, lambda: self.perform_sort(algo, selected_column))
 
     def perform_sort(self, algo, selected_column):
@@ -39,17 +36,17 @@ class SortingForm(QtWidgets.QWidget):
 
         # Sort the raw_data based on the selected algorithm
         if algo == 'Merge':
-            sorted_data = merge_sort(raw_data, selected_column)  # Assuming merge_sort sorts correctly by column
+            sorted_data = merge_sort(raw_data, selected_column)
         elif algo == 'Quick':
-            sorted_data = quick_sort(raw_data, selected_column)  # Assuming quick_sort sorts correctly by column
+            sorted_data = quick_sort(raw_data, selected_column)
         elif algo == 'Counting':
             if is_numeric:
-                sorted_data = counting_sort_strings([str(row[selected_column]) for row in raw_data], position=0)  # Adjust the position if needed
+                sorted_data = counting_sort_strings([str(row[selected_column]) for row in raw_data], position=0)
             else:
-                sorted_data = counting_sort_strings([row[selected_column] for row in raw_data], position=0)  # Adjust the position if needed
+                sorted_data = counting_sort_strings([row[selected_column] for row in raw_data], position=0)
         elif algo == 'Radix':
             if is_numeric:
-                sorted_data = radix_sort_strings([str(row[selected_column]) for row in raw_data])  # Ensure it's string
+                sorted_data = radix_sort_strings([str(row[selected_column]) for row in raw_data])
             else:
                 sorted_data = radix_sort_strings([row[selected_column] for row in raw_data])
         elif algo == 'Bucket':
@@ -59,11 +56,11 @@ class SortingForm(QtWidgets.QWidget):
         elif algo == 'Selection':
             sorted_data = selection_sort([row[selected_column] for row in raw_data])
         elif algo == 'Insertion':
-            sorted_data = insertion_sort(raw_data)  # This will sort both digits and strings
+            sorted_data = insertion_sort(raw_data)
         elif algo == 'Tim':
-            sorted_data = tim_sort(raw_data)  # This will sort both digits and strings
+            sorted_data = tim_sort(raw_data)
         elif algo == 'Heap':
-            sorted_data = heap_sort(raw_data)  
+            sorted_data = heap_sort(raw_data)
 
         # Simulate progress for the sorting operation
         for i in range(101):
@@ -74,15 +71,10 @@ class SortingForm(QtWidgets.QWidget):
         sorted_raw_data = [raw_data[i] for i in sorted(range(len(raw_data)), key=lambda k: (str(raw_data[k][selected_column]) if not is_numeric else raw_data[k][selected_column]))]
 
         # Update the table with the sorted data
-        for row in range(len(sorted_raw_data)):
-            for col in range(len(sorted_raw_data[row])):
-                self.tableWidget.item(row, col).setText(sorted_raw_data[row][col])
+        self.update_table(sorted_raw_data)
 
         # Display a done message
         self.show_done_message()
-
-        # Optionally, you could call a method to update the table if needed
-        self.update_table(sorted_raw_data)  # If you have a dedicated method for table updates
 
     def show_done_message(self):
         """Display a message box when sorting is done."""
@@ -103,7 +95,7 @@ class SortingForm(QtWidgets.QWidget):
         self.tableWidget.setRowCount(len(sorted_data))  # Adjust row count to fit sorted data
         for row_index, row_data in enumerate(sorted_data):
             for col_index, item in enumerate(row_data):
-                self.tableWidget.setItem(row_index, col_index, QtWidgets.QTableWidgetItem(str(item)))  # Update table with sorted values
+                self.tableWidget.setItem(row_index, col_index, QtWidgets.QTableWidgetItem(str(item)))
 
     def setupUi(self):
         self.setObjectName("SortingForm")
@@ -125,6 +117,12 @@ class SortingForm(QtWidgets.QWidget):
         self.label.setFont(font)
         self.verticalLayout.addWidget(self.label)
 
+        # Load CSV button
+        self.loadCsvButton = QtWidgets.QPushButton("Load CSV")
+        self.loadCsvButton.setStyleSheet("background-color: green; color: white;")
+        self.loadCsvButton.clicked.connect(self.load_data)
+        self.verticalLayout.addWidget(self.loadCsvButton)
+
         # Sorting algorithm buttons (grid layout)
         self.gridLayout = QtWidgets.QGridLayout()
         self.sortingButtons = {}
@@ -133,7 +131,6 @@ class SortingForm(QtWidgets.QWidget):
         for i, algo in enumerate(algorithms):
             self.sortingButtons[algo] = QtWidgets.QPushButton(f"{algo} Sort")
             self.sortingButtons[algo].setStyleSheet("background-color: darkblue; color: white;")
-            # Connect the button click to the on_sort_button_clicked method
             self.sortingButtons[algo].clicked.connect(lambda _, a=algo: self.on_sort_button_clicked(a))
             self.gridLayout.addWidget(self.sortingButtons[algo], i // 5, i % 5)
 
@@ -181,7 +178,6 @@ class SortingForm(QtWidgets.QWidget):
 
         # Set the layout
         self.setLayout(self.verticalLayout)
-        self.load_data()
 
     def on_column_selected(self):
         """Handle the event when a column is selected in the QTableWidget."""
@@ -191,7 +187,7 @@ class SortingForm(QtWidgets.QWidget):
             print(f"Selected column: {selected_column}")  # For debugging purposes
 
     def load_data(self):
-        """Load initial data into the table."""
+        """Load data into the table when the button is clicked."""
         load_csv_data(self.tableWidget)  # Load CSV data into the table
 
     def go_back(self):
@@ -202,7 +198,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     mainWin = QtWidgets.QStackedWidget()
-    sorting_form = SortingForm(mainWin)
-    mainWin.addWidget(sorting_form)
+    form = SortingForm(mainWin)
+    mainWin.addWidget(form)
     mainWin.show()
     sys.exit(app.exec_())
