@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from UIfunctions import load_csv_data, on_column_selected
 from Algorithms import merge_sort, quick_sort, radix_sort_strings, counting_sort_strings, bucket_sort, bubble_sort, selection_sort, insertion_sort, tim_sort, heap_sort
+import time  # Import the time module
 
 class SortingForm(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -34,6 +35,9 @@ class SortingForm(QtWidgets.QWidget):
         self.progressBar.setValue(0)
         self.progressBar.setMaximum(100)
 
+        # Start the timer before sorting
+        start_time = time.time()
+
         # Sort the raw_data based on the selected algorithm
         if algo == 'Merge':
             sorted_data = merge_sort(raw_data, selected_column)
@@ -66,6 +70,10 @@ class SortingForm(QtWidgets.QWidget):
         for i in range(101):
             QtCore.QThread.msleep(10)  # Simulate time taken for sorting
             self.progressBar.setValue(i)
+
+        # Calculate the elapsed time
+        elapsed_time = time.time() - start_time
+        self.timeDisplay.setText(f"{elapsed_time * 1000:.2f}")  # Set the time in milliseconds
 
         # Map the sorted strings back to their original rows
         sorted_raw_data = [raw_data[i] for i in sorted(range(len(raw_data)), key=lambda k: (str(raw_data[k][selected_column]) if not is_numeric else raw_data[k][selected_column]))]
@@ -191,8 +199,10 @@ class SortingForm(QtWidgets.QWidget):
         load_csv_data(self.tableWidget)  # Load CSV data into the table
 
     def go_back(self):
-        """Go back to the previous screen."""
-        self.parent.setCurrentIndex(0)  # Assuming you want to go back to the first widget in the stacked layout
+        """Go back to the previous screen (implement as needed)."""
+        self.parent.show()  # Show the parent window
+
+
 
 if __name__ == "__main__":
     import sys
