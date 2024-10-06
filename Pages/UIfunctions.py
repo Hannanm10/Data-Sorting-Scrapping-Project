@@ -4,9 +4,9 @@ from PyQt5 import QtWidgets
 
 def load_csv_data(table_widget):
 
-    
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    csv_file = os.path.join(desktop_path, "ScrapedDataFromEBAY.csv") 
+    # Get the current directory where the script is located
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    csv_file = os.path.join(current_directory, "ScrapedDataFromEBAY.csv") 
 
     data = []  # Initialize an empty list to store the data
     try:
