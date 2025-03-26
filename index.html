@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .navbar {
+            width: 100%;
+            background-color: #091dcd;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+        .main-content {
+            text-align: center;
+            padding: 30px;
+            max-width: 900px;
+        }
+        .description-box {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .parallel-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .parallel-box {
+            flex: 1;
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .image-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .image-section img {
+            width: 30%;
+            border-radius: 10px;
+        }
+        .video-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .video-section iframe {
+            width: 80%;
+            height: 400px;
+            border-radius: 10px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .button {
+            text-decoration: none;
+            background-color:  #091dcd;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #0c93cd;
+        }
+        h2{
+            color: #099ccd;
+        }
+        .footer {
+            background-color: #091dcd;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">Sorting Visualizer</div>
+
+    <div class="main-content">
+        <div class="description-box">
+            <h2>Project Overview</h2>
+            <p>The Sorting Visualizer is an interactive web-based tool that sorts a dataset of 25,000 entries using 10 different algorithms.</p>
+            <p>It helps users understand how sorting algorithms work visually, allowing real-time comparisons of speed and efficiency.</p>
+            <p>Ideal for students, educators, and enthusiasts looking to deepen their understanding of sorting mechanisms.</p>
+        </div>
+        
+        <div class="parallel-container">
+            <div class="parallel-box">
+                <h2>Skills & Learning Outcomes</h2>
+                <p>✔ Hands-on experience with sorting algorithms</p>
+                <p>✔ Understanding algorithm complexities</p>
+                <p>✔ Data visualization techniques</p>
+            </div>
+            <div class="parallel-box">
+                <h2>Project Experience</h2>
+                <p>🔹 Used in competitive programming</p>
+                <p>🔹 Database indexing & search engines</p>
+                <p>🔹 AI and large-scale data processing</p>
+            </div>
+        </div>
+        
+        <h2>Screenshots</h2>
+        <div class="image-section">
+            <img src="ss1.png" alt="Sorting Animation">
+            <img src="ss2.png" alt="Algorithm Comparison">
+            <!-- <img src="sort3.jpg" alt="Performance Metrics"> -->
+        </div>
+
+        <h2>Demo Video</h2>
+        <div class="video-section">
+            <iframe src="vid.mp4" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <h2>Project Links</h2>
+        <div class="buttons">
+            <a href="https://github.com/Hannanm10/Data-Sorting-Scrapping-Project/archive/refs/heads/main.zip" class="button">Download</a>
+            <!--  -->
+            <a href="#" class="button">Back to Projects</a>
+        </div>
+    </div>
+
+    <div class="footer">Sorting Visualizer - Bringing algorithms to life</div>
+</body>
+</html>
